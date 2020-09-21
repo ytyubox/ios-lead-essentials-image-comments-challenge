@@ -26,8 +26,8 @@
 		082C00042359E46C008927D3 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082C00032359E46C008927D3 /* XCTestCase+MemoryLeakTracking.swift */; };
 		082C00062359E4C6008927D3 /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082C00052359E4C6008927D3 /* SharedTestHelpers.swift */; };
 		0832C9D0238D2811002314C9 /* SceneDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0832C9CF238D2811002314C9 /* SceneDelegateTests.swift */; };
-		08367CD82486FB51009CD536 /* UIView+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08367CD72486FB51009CD536 /* UIView+TestHelpers.swift */; };
 		0835BF6D24850F9800A793D2 /* CombineHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0835BF6C24850F9800A793D2 /* CombineHelpers.swift */; };
+		08367CD82486FB51009CD536 /* UIView+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08367CD72486FB51009CD536 /* UIView+TestHelpers.swift */; };
 		0851CDAC239AB13100C19B1D /* HTTPClientStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0851CDAB239AB13100C19B1D /* HTTPClientStub.swift */; };
 		0851CDAE239AB19000C19B1D /* InMemoryFeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0851CDAD239AB19000C19B1D /* InMemoryFeedStore.swift */; };
 		0895DA87234B3B950031BB2D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0895DA86234B3B950031BB2D /* AppDelegate.swift */; };
@@ -85,8 +85,8 @@
 		082C00032359E46C008927D3 /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		082C00052359E4C6008927D3 /* SharedTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedTestHelpers.swift; sourceTree = "<group>"; };
 		0832C9CF238D2811002314C9 /* SceneDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegateTests.swift; sourceTree = "<group>"; };
-		08367CD72486FB51009CD536 /* UIView+TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+TestHelpers.swift"; sourceTree = "<group>"; };
 		0835BF6C24850F9800A793D2 /* CombineHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineHelpers.swift; sourceTree = "<group>"; };
+		08367CD72486FB51009CD536 /* UIView+TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+TestHelpers.swift"; sourceTree = "<group>"; };
 		0851CDAB239AB13100C19B1D /* HTTPClientStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientStub.swift; sourceTree = "<group>"; };
 		0851CDAD239AB19000C19B1D /* InMemoryFeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryFeedStore.swift; sourceTree = "<group>"; };
 		0895DA83234B3B950031BB2D /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,7 +246,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Essential Developer";
 				TargetAttributes = {
 					0895DA82234B3B950031BB2D = {
@@ -385,6 +385,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -409,7 +410,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -445,6 +446,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -463,7 +465,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
