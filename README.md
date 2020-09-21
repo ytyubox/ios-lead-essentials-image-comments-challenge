@@ -12,33 +12,34 @@ You'll develop the API, Presentation, and UI layers for this feature.
 
 *Important: There's no need to cache comments.*
 
+
 ## Goals
 
-1. Display a list of comments when the user taps on an image in the feed.
+1) Display a list of comments when the user taps on an image in the feed.
 
-2. Loading the comments can fail, so you must handle the UI states accordingly. 
+2) Loading the comments can fail, so you must handle the UI states accordingly. 
 	- Show a loading spinner while loading the comments.
 		
 		- If it fails to load: Show an error message.
 		
 		- If it loads successfully: Show all loaded comments in the order they were returned by the remote API.
 
-3. The loading should start automatically when the user navigates to the screen.
+3) The loading should start automatically when the user navigates to the screen.
 	- The user should also be able to reload the comments manually (Pull-to-refresh).
 
-4. At all times, the user should have a back button to return to the feed screen.
+4) At all times, the user should have a back button to return to the feed screen.
 	- Cancel any running comments API requests when the user navigates back.
 
-5. The comments screen layout should match the UI specs.
+5) The comments screen layout should match the UI specs.
 	- Present the comment date using relative date formatting, e.g., "1 day ago."
 
-6. The comments screen title should be localized in all languages supported in the project.
+6) The comments screen title should be localized in all languages supported in the project.
 
-7. The comments screen should support Light and Dark Mode.
+7) The comments screen should support Light and Dark Mode.
 
-8. Write tests to validate your implementation, including unit, integration, and snapshot tests (aim to write the test first!).
+8) Write tests to validate your implementation, including unit, integration, and snapshot tests (aim to write the test first!).
 
-9. Follow the specs below and test-drive this feature from scratch:
+9) Follow the specs below and test-drive this feature from scratch:
 
 ---
 
@@ -165,35 +166,41 @@ http://image-comments-challenge.essentialdeveloper.com/image/{image-id}/comments
 
 ## Instructions
 
-- Fork the latest version of this repository. Here's <a href="https://guides.github.com/activities/forking" target="_blank">how forking works</a>.
+1) Fork the latest version of this repository. Here's <a href="https://guides.github.com/activities/forking" target="_blank">how forking works</a>.
 
-- Use the `EssentialApp/EssentialApp.xcworkspace` workspace to develop this feature.
+2) Open the `EssentialApp/EssentialApp.xcworkspace` workspace project on Xcode 12.
 
-- You can develop the platform-agnostic logic in the `EssentialFeed` target using the `macOS` scheme to speed up the TDD cycle.
+3) You can develop the platform-agnostic logic in the `EssentialFeed` target using the `macOS` platform to speed up the TDD cycle.
 
-- Feel free to organize the 'Image Comments' feature in any way you want in the project. You can use the existing projects and targets, or create new ones if you want to.
+4) Feel free to organize the 'Image Comments' feature in any way you want in the project. You can use the existing projects and targets, or create new ones if you want to.
 	
 	- If you add new projects, make sure to add them to the `EssentialApp` workspace.
 
 	- If you add new targets, make sure to add them to the `CI_macOS` and `CI_iOS` schemes as needed, so we can run all tests on the CI server.
 
-- You can see/interact with your solution by running the Application on the simulator (or device). 
+5) You can see/interact with your solution by running the Application on the simulator (or device). 
 	- Switch to the `EssentialApp` scheme and press CMD+R.
 
-- When you’re done implementing your solutions, create a Pull Request from your branch to the main challenge repo. 
+6) When all tests are passing and you're done implementing your solution, create a Pull Request from your branch to the main challenge repo  **with the title: "Your Name - Image Comments Challenge**. 
 
-**Before creating a Pull Request, make sure the feature works and all tests are passing by switching to the `CI_iOS` scheme and running the tests on your machine (CMD+U).**
+**7) Post a comment in the challenge page in the academy with the link to your PR, so we can review your solution and provide feedback.**
+
 
 ## Guidelines
 
-- Aim to test-first and commit your changes every time you add/alter the behavior of your system or refactor your code.
-- The system should always be in a green state, meaning that in each commit, all tests should be passing.
-- The project should build without warnings.
-- The code should be carefully organized and easy to read (e.g., indentation must be consistent, etc.).
-- Aim to create short methods.
-- Aim to declare dependencies explicitly, instead of implicitly, leveraging dependency injection wherever necessary.
-- Aim for descriptive commit messages that clarify the intent of your contribution, which will help other developers understand your train of thought and purpose of changes.
-- Make careful and proper use of access control, marking as private any implementation details that aren’t referenced from other external components.
-- Aim to write self-documenting code by providing context and detail when naming your components, avoiding explanations in comments when possible.
+
+1) Aim to commit your changes every time you add/alter the behavior of your system or refactor your code.
+
+2) Aim for descriptive commit messages that clarify the intent of your contribution which will help other developers understand your train of thought and purpose of changes.
+
+3) The system should always be in a green state, meaning that in each commit all tests should be passing.
+
+4) The project should build without warnings.
+
+5) The code should be carefully organized and easy to read (e.g. indentation must be consistent).
+
+6) Make careful and proper use of access control, marking as `private` any implementation details that aren’t referenced from other external components.
+
+7) Aim to write self-documenting code by providing context and detail when naming your components, avoiding explanations in comments.
 
 Happy coding!
