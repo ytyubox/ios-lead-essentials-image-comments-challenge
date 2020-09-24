@@ -35,7 +35,9 @@ You'll develop the API, Presentation, and UI layers for this feature.
 
 6) The comments screen title should be localized in all languages supported in the project.
 
-7) The comments screen should support Light and Dark Mode.
+7) The comments screen should support:
+	- Light and Dark Mode
+	- Dynamic Fonts
 
 8) Write tests to validate your implementation, including unit, integration, and snapshot tests (aim to write the test first!).
 
