@@ -21,9 +21,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 				.appendingPathComponent("feed-store.sqlite"))
 	}()
 
+    private lazy var remoteFeedLoader: RemoteFeedLoader = {
+        RemoteFeedLoader(
+            url: URL(string: "http://image-comments-challenge.essentialdeveloper.com/feed")!,
+            client: httpClient)
+    }()
+
 	private lazy var localFeedLoader: LocalFeedLoader = {
 		LocalFeedLoader(store: store, currentDate: Date.init)
 	}()
+    
+    private lazy var remoteImageLoader: RemoteFeedImageDataLoader = {
+        RemoteFeedImageDataLoader(client: httpClient)
+    }()
+
+    private lazy var localImageLoader: LocalFeedImageDataLoader = {
+        LocalFeedImageDataLoader(store: store)
+    }()
 
 	convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
 		self.init()
@@ -52,10 +66,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}
     
     private func makeRemoteFeedLoaderWithLocalFallback() -> FeedLoader.Publisher {
-        let remoteURL = URL(string: "http://image-comments-challenge.essentialdeveloper.com/feed")!
-        
-        let remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
-        
         return remoteFeedLoader
             .loadPublisher()
             .caching(to: localFeedLoader)
@@ -63,12 +73,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
-        let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
-        let localImageLoader = LocalFeedImageDataLoader(store: store)
-
         return localImageLoader
             .loadImageDataPublisher(from: url)
-            .fallback(to: {
+            .fallback(to: { [remoteImageLoader, localImageLoader] in
                 remoteImageLoader
                     .loadImageDataPublisher(from: url)
                     .caching(to: localImageLoader, using: url)
