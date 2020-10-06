@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private lazy var remoteFeedLoader: RemoteFeedLoader = {
         RemoteFeedLoader(
-            url: URL(string: "http://image-comments-challenge.essentialdeveloper.com/feed")!,
+            url: URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!,
             client: httpClient)
     }()
 

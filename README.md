@@ -150,19 +150,19 @@ GET /image/{image-id}/comments
 
 #### Base URL
 
-http://image-comments-challenge.essentialdeveloper.com
+https://ile-api.essentialdeveloper.com/essential-feed
 
 #### Feed URL
 
-Base URL + /feed
+Base URL + /v1/feed
 
-http://image-comments-challenge.essentialdeveloper.com/feed
+https://ile-api.essentialdeveloper.com/essential-feed/v1/feed
 
 #### Image Comments URL
 
-Base URL + /image/{image-id}/comments
+Base URL + /v1/image/{image-id}/comments
 
-http://image-comments-challenge.essentialdeveloper.com/image/{image-id}/comments
+https://ile-api.essentialdeveloper.com/essential-feed/v1/image/{image-id}/comments
 
 ---
 
