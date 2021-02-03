@@ -4,17 +4,15 @@
 
 import Foundation
 
-public protocol FeedLoader {
-    associatedtype Output: ExpressibleByArrayLiteral
+public protocol Loader {
+    associatedtype Output
     typealias Outcome = Swift.Result<Output, Error>
     typealias Promise = (Outcome) -> Void
 
     func load(completion: @escaping Promise)
 }
 
-public protocol EmptyDefault {
-    static var empty: Self { get }
-}
+public protocol FeedLoader: Loader where Output: ExpressibleByArrayLiteral {}
 
 private class FeedLoaderBaseBox<Output: ExpressibleByArrayLiteral>: FeedLoader {
     init() {}
