@@ -74,30 +74,6 @@ enum ImageCommendMapper {
     }
 }
 
-struct RemoteImageCommentItem: Codable {
-    let id: UUID
-    let message: String
-    let createdAt: Date
-    let author: Author
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case message
-        case createdAt = "created_at"
-        case author
-    }
-
-    // MARK: - Author
-
-    struct Author: Codable {
-        let username: String
-
-        enum CodingKeys: String, CodingKey {
-            case username
-        }
-    }
-}
-
 extension RemoteImageCommentItem {
     var model: ImageComment {
         .init(id: id, message: message, createdAt: createdAt, author: ImageComment.Author(username: author.username))
