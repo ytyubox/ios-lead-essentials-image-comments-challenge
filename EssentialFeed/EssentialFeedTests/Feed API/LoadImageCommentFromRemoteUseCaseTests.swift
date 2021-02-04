@@ -8,6 +8,7 @@
  */
 
 import EssentialFeed
+@testable import class EssentialFeed.HTTPClientTaskWrapper
 import XCTest
 
 final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
@@ -28,8 +29,9 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     }
 
     func load(from url: URL, completion: @escaping Promise) -> FeedImageDataLoaderTask {
-        client.get(from: url) {
-            [mapper] result in
+        let task = HTTPClientTaskWrapper(completion)
+        task.wrapped = client.get(from: url) {
+            [mapper, completion] result in
             completion(
                 result
                     .flatMap {
@@ -38,7 +40,7 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
                     }
             )
         }
-        return Task()
+        return task
     }
 
     private static func thowIfNot2XX(response: HTTPURLResponse) throws {
@@ -162,6 +164,17 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
             let invalidJSON = Data("invalid json".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         })
+    }
+
+    func test_cancelLoadImageDataURLTask_cancelsClientURLRequest() {
+        let (sut, client) = makeSUT()
+        let url = URL(string: "https://a-given-url.com")!
+
+        let task = sut.load(from: url) { _ in }
+        XCTAssertTrue(client.cancelledURLs.isEmpty, "Expected no cancelled URL request until task is cancelled")
+
+        task.cancel()
+        XCTAssertEqual(client.cancelledURLs, [url], "Expected cancelled URL request after task is cancelled")
     }
 
     // MARK: - helper
