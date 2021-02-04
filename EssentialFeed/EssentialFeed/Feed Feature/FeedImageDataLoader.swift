@@ -12,7 +12,7 @@ public protocol LoadFromURLAndCancelableLoader {
     associatedtype Output
     typealias Outcome = Swift.Result<Output, Error>
     typealias Promise = (Outcome) -> Void
-    typealias Mapper = (Data, HTTPURLResponse) -> Output
+    typealias Mapper = (Data, HTTPURLResponse) throws -> Output
 
     func load(from url: URL, completion: @escaping Promise) -> FeedImageDataLoaderTask
 }

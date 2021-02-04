@@ -21,8 +21,11 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
         self.client = client
         self.url = url
         mapper = {
-            _, _ in
-            ImageComment()
+            _, response in
+            guard (200 ..< 300).contains(response.statusCode) else {
+                throw Error.invalidData
+            }
+            return ImageComment()
         }
     }
 
@@ -30,10 +33,19 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
         client.get(from: url) {
             [mapper] result in
             completion(
-                result.map(mapper)
+                result
+                    .flatMap {
+                        data, response in
+                        Result { try mapper(data, response) }
+                    }
             )
         }
         return Task()
+    }
+
+    public enum Error: Swift.Error {
+        case connectivity
+        case invalidData
     }
 
     class Task: FeedImageDataLoaderTask {
@@ -41,7 +53,7 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     }
 }
 
-struct ImageComment {}
+struct ImageComment: Equatable {}
 
 class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
     func test_init_doesNotPerformAnyURLRequest() {
@@ -69,6 +81,18 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [url, url])
     }
 
+    func test_loadImageDataFromURL_deliversInvalidDataErrorOnNon2xxHTTPResponse() {
+        let (sut, client) = makeSUT()
+
+        let samples = [199, 300, 400, 500]
+
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: failure(.invalidData), when: {
+                client.complete(withStatusCode: code, data: anyData(), at: index)
+            })
+        }
+    }
+
     // MARK: - helper
 
     func makeSUT(url: URL = anyURL(), file: StaticString = #file, line: UInt = #line) -> (RemoteImageCommentLoader, HTTPClientSpy) {
@@ -77,5 +101,36 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         trackForMemoryLeaks(client, file: file, line: line)
         return (sut, client)
+    }
+
+    private func failure(_ error: RemoteImageCommentLoader.Error) -> RemoteImageCommentLoader.Outcome {
+        return .failure(error)
+    }
+
+    private func expect(_ sut: RemoteImageCommentLoader, toCompleteWith expectedResult: RemoteImageCommentLoader.Outcome, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+        let url = URL(string: "https://a-given-url.com")!
+        let exp = expectation(description: "Wait for load completion")
+
+        _ = sut.load(from: url) { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedComment), .success(expectedComment)):
+                XCTAssertEqual(receivedComment, expectedComment, file: file, line: line)
+
+            case let (.failure(receivedError as RemoteFeedImageDataLoader.Error), .failure(expectedError as RemoteFeedImageDataLoader.Error)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+
+            default:
+                XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+            }
+
+            exp.fulfill()
+        }
+
+        action()
+
+        wait(for: [exp], timeout: 1.0)
     }
 }
