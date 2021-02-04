@@ -19,7 +19,7 @@ public final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
         mapper = {
             data, response in
             try Self.thowIfNot2XX(response: response)
-            return try ImageCommendMapper.map(data, from: response).map(\.model)
+            return try ImageCommentMapper.map(data, from: response).map(\.model)
         }
     }
 
@@ -46,31 +46,6 @@ public final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
 
     class Task: FeedImageDataLoaderTask {
         func cancel() {}
-    }
-}
-
-enum ImageCommendMapper {
-    private struct Root: Decodable {
-        let items: [RemoteImageCommentItem]
-    }
-
-    private static let decoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss+0000"
-        decoder.dateDecodingStrategy = .formatted(dateFormatter)
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        return decoder
-    }()
-
-    static func map(_ data: Data, from _: HTTPURLResponse) throws -> [RemoteImageCommentItem] {
-        guard let root = try? decoder
-            .decode(Root.self, from: data)
-        else {
-            throw RemoteError.invalidData
-        }
-
-        return root.items
     }
 }
 
