@@ -79,24 +79,3 @@ extension RemoteImageCommentItem {
         .init(id: id, message: message, createdAt: createdAt, author: ImageComment.Author(username: author.username))
     }
 }
-
-public struct ImageComment: Equatable {
-    public init(id: UUID, message: String, createdAt: Date, author: ImageComment.Author) {
-        self.id = id
-        self.message = message
-        self.createdAt = createdAt
-        self.author = author
-    }
-
-    let id: UUID
-    let message: String
-    let createdAt: Date
-    let author: Author
-    public struct Author: Equatable {
-        public init(username: String) {
-            self.username = username
-        }
-
-        let username: String
-    }
-}
