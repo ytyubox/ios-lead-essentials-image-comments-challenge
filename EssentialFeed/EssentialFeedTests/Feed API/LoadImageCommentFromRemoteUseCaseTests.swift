@@ -22,9 +22,7 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
         self.url = url
         mapper = {
             _, response in
-            guard (200 ..< 300).contains(response.statusCode) else {
-                throw Error.invalidData
-            }
+            try Self.thowIfNot2XX(response: response)
             return ImageComment()
         }
     }
@@ -41,6 +39,12 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
             )
         }
         return Task()
+    }
+
+    private static func thowIfNot2XX(response: HTTPURLResponse) throws {
+        guard (200 ..< 300).contains(response.statusCode) else {
+            throw Error.invalidData
+        }
     }
 
     public enum Error: Swift.Error {
