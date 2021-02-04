@@ -57,8 +57,17 @@ enum ImageCommendMapper {
         let items: [RemoteImageCommentItem]
     }
 
+    private static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss+0000"
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return decoder
+    }()
+
     static func map(_ data: Data, from _: HTTPURLResponse) throws -> [RemoteImageCommentItem] {
-        guard let root = try? JSONDecoder()
+        guard let root = try? decoder
             .decode(Root.self, from: data)
         else {
             throw RemoteError.invalidData
@@ -69,7 +78,7 @@ enum ImageCommendMapper {
 }
 
 struct RemoteImageCommentItem: Codable {
-    let id: String
+    let id: UUID
     let message: String
     let createdAt: Date
     let author: Author
@@ -99,7 +108,7 @@ extension RemoteImageCommentItem {
 }
 
 struct ImageComment: Equatable {
-    let id: String
+    let id: UUID
     let message: String
     let createdAt: Date
     let author: Author
@@ -153,6 +162,35 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         samples.enumerated().forEach { index, code in
             expect(sut, toCompleteWith: .success([]), when: {
                 let emptyListJSON = makeItemsJSON([])
+                client.complete(withStatusCode: code, data: emptyListJSON, at: index)
+            })
+        }
+    }
+
+    func test_loadImageComment_deliversItemsOn2xxHTTPResponseWithJSONItems() throws {
+        let (sut, client) = makeSUT()
+        let samples = [200, 250, 299]
+
+        let item1 = try makeItem(
+            id: anyUUID(),
+            message: "a message",
+            createdAt: "2020-05-20T11:24:59+0000",
+            authorName: "a username"
+        )
+
+        let item2 = try makeItem(
+            id: anyUUID(),
+            message: "another message",
+            createdAt: "2020-05-19T14:23:53+0000",
+            authorName: "another username"
+        )
+
+        let items = [item1.model, item2.model]
+        let jsons = [item1.json, item2.json]
+
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .success(items), when: {
+                let emptyListJSON = makeItemsJSON(jsons)
                 client.complete(withStatusCode: code, data: emptyListJSON, at: index)
             })
         }
@@ -229,15 +267,19 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         return .failure(error)
     }
 
-    private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
-        let item = FeedImage(id: id, description: description, location: location, url: imageURL)
+    private func makeItem(id: String, message: String, createdAt: String, authorName: String) throws -> (model: ImageComment, json: [String: Any]) {
+        let id = try XCTUnwrap(UUID(uuidString: id), "failure to generate UUID form id: \(id)")
+        let createdAtDate = try dateStringToDate(createdAt)
+        let item = ImageComment(id: id, message: message, createdAt: createdAtDate, author: .init(username: authorName))
 
-        let json = [
+        let json: [String: Any] = [
             "id": id.uuidString,
-            "description": description,
-            "location": location,
-            "image": imageURL.absoluteString,
-        ].compactMapValues { $0 }
+            "message": message,
+            "created_at": createdAt,
+            "author": [
+                "username": authorName,
+            ],
+        ]
 
         return (item, json)
     }
@@ -263,7 +305,7 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
 
             default:
-                XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+                XCTFail("Expected result\n\(expectedResult)\ngot\n\(receivedResult) instead", file: file, line: line)
             }
 
             exp.fulfill()
