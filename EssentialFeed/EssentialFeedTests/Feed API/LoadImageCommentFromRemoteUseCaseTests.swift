@@ -31,13 +31,12 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     func load(from url: URL, completion: @escaping Promise) -> FeedImageDataLoaderTask {
         let task = HTTPClientTaskWrapper(completion)
         task.wrapped = client.get(from: url) {
-            [mapper, completion] result in
-            completion(
-                result
-                    .flatMap {
-                        data, response in
-                        Result { try mapper(data, response) }
-                    }
+            [task, mapper] result in
+            task.complete(
+                with: result.flatMap {
+                    data, response in
+                    Result { try mapper(data, response) }
+                }
             )
         }
         return task
@@ -175,6 +174,21 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
 
         task.cancel()
         XCTAssertEqual(client.cancelledURLs, [url], "Expected cancelled URL request after task is cancelled")
+    }
+
+    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
+        let (sut, client) = makeSUT()
+        let nonEmptyData = Data("non-empty data".utf8)
+
+        var received = [RemoteImageCommentLoader.Outcome]()
+        let task = sut.load(from: anyURL()) { received.append($0) }
+        task.cancel()
+
+        client.complete(withStatusCode: 404, data: anyData())
+        client.complete(withStatusCode: 200, data: nonEmptyData)
+        client.complete(with: anyNSError())
+
+        XCTAssertTrue(received.isEmpty, "Expected no received results after cancelling task")
     }
 
     // MARK: - helper
