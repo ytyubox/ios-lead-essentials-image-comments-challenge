@@ -146,6 +146,18 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         }
     }
 
+    func test_loadImageComment_deliversNoItemsOn2xxHTTPResponseWithEmptyJSONList() {
+        let (sut, client) = makeSUT()
+        let samples = [200, 250, 299]
+
+        samples.enumerated().forEach { index, code in
+            expect(sut, toCompleteWith: .success([]), when: {
+                let emptyListJSON = makeItemsJSON([])
+                client.complete(withStatusCode: code, data: emptyListJSON, at: index)
+            })
+        }
+    }
+
     func test_loadImageDataFromURL_deliversInvalidDataErrorOn2xxHTTPResponseWithEmptyData() {
         let (sut, client) = makeSUT()
 
@@ -215,6 +227,24 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
 
     private func failure(_ error: RemoteError) -> RemoteImageCommentLoader.Outcome {
         return .failure(error)
+    }
+
+    private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
+        let item = FeedImage(id: id, description: description, location: location, url: imageURL)
+
+        let json = [
+            "id": id.uuidString,
+            "description": description,
+            "location": location,
+            "image": imageURL.absoluteString,
+        ].compactMapValues { $0 }
+
+        return (item, json)
+    }
+
+    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+        let json = ["items": items]
+        return try! JSONSerialization.data(withJSONObject: json)
     }
 
     private func expect(_ sut: RemoteImageCommentLoader, toCompleteWith expectedResult: RemoteImageCommentLoader.Outcome, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
