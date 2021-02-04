@@ -11,7 +11,7 @@ import EssentialFeed
 import XCTest
 
 final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
-    typealias Output = ImageComment
+    typealias Output = [ImageComment]
 
     let client: HTTPClient
     let url: URL
@@ -21,9 +21,9 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
         self.client = client
         self.url = url
         mapper = {
-            _, response in
+            data, response in
             try Self.thowIfNot2XX(response: response)
-            return ImageComment()
+            return try ImageCommendMapper.map(data, from: response).map(\.model)
         }
     }
 
@@ -43,13 +43,8 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
 
     private static func thowIfNot2XX(response: HTTPURLResponse) throws {
         guard (200 ..< 300).contains(response.statusCode) else {
-            throw Error.invalidData
+            throw RemoteError.invalidData
         }
-    }
-
-    public enum Error: Swift.Error {
-        case connectivity
-        case invalidData
     }
 
     class Task: FeedImageDataLoaderTask {
@@ -57,7 +52,61 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     }
 }
 
-struct ImageComment: Equatable {}
+enum ImageCommendMapper {
+    private struct Root: Decodable {
+        let items: [RemoteImageCommentItem]
+    }
+
+    static func map(_ data: Data, from _: HTTPURLResponse) throws -> [RemoteImageCommentItem] {
+        guard let root = try? JSONDecoder()
+            .decode(Root.self, from: data)
+        else {
+            throw RemoteError.invalidData
+        }
+
+        return root.items
+    }
+}
+
+struct RemoteImageCommentItem: Codable {
+    let id: String
+    let message: String
+    let createdAt: Date
+    let author: Author
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case message
+        case createdAt = "created_at"
+        case author
+    }
+
+    // MARK: - Author
+
+    struct Author: Codable {
+        let username: String
+
+        enum CodingKeys: String, CodingKey {
+            case username
+        }
+    }
+}
+
+extension RemoteImageCommentItem {
+    var model: ImageComment {
+        .init(id: id, message: message, createdAt: createdAt, author: ImageComment.Author(username: author.username))
+    }
+}
+
+struct ImageComment: Equatable {
+    let id: String
+    let message: String
+    let createdAt: Date
+    let author: Author
+    struct Author: Equatable {
+        let username: String
+    }
+}
 
 class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
     func test_init_doesNotPerformAnyURLRequest() {
@@ -97,6 +146,15 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         }
     }
 
+    func test_loadImageDataFromURL_deliversInvalidDataErrorOn2xxHTTPResponseWithEmptyData() {
+        let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: failure(.invalidData), when: {
+            let emptyData = Data()
+            client.complete(withStatusCode: 200, data: emptyData)
+        })
+    }
+
     // MARK: - helper
 
     func makeSUT(url: URL = anyURL(), file: StaticString = #file, line: UInt = #line) -> (RemoteImageCommentLoader, HTTPClientSpy) {
@@ -107,7 +165,7 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         return (sut, client)
     }
 
-    private func failure(_ error: RemoteImageCommentLoader.Error) -> RemoteImageCommentLoader.Outcome {
+    private func failure(_ error: RemoteError) -> RemoteImageCommentLoader.Outcome {
         return .failure(error)
     }
 
