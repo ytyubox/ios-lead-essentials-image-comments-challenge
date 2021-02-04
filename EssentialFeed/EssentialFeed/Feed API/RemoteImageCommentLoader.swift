@@ -43,10 +43,6 @@ public final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
             throw RemoteError.invalidData
         }
     }
-
-    class Task: FeedImageDataLoaderTask {
-        func cancel() {}
-    }
 }
 
 extension RemoteImageCommentItem {
