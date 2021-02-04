@@ -15,12 +15,10 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     typealias Output = [ImageComment]
 
     let client: HTTPClient
-    let url: URL
     let mapper: Mapper
 
-    internal init(url: URL, client: HTTPClient) {
+    internal init(client: HTTPClient) {
         self.client = client
-        self.url = url
         mapper = {
             data, response in
             try Self.thowIfNot2XX(response: response)
@@ -31,11 +29,12 @@ final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
     func load(from url: URL, completion: @escaping Promise) -> FeedImageDataLoaderTask {
         let task = HTTPClientTaskWrapper(completion)
         task.wrapped = client.get(from: url) {
-            [task, mapper] result in
+            [weak self, task] result in
+            guard let self = self else { return }
             task.complete(
                 with: result.flatMap {
                     data, response in
-                    Result { try mapper(data, response) }
+                    Result { try self.mapper(data, response) }
                 }
             )
         }
@@ -118,7 +117,7 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
 
     func test_loadImageDataFromURL_requestsDataFromURL() {
         let url = URL(string: "https://a-given-url.com")!
-        let (sut, client) = makeSUT(url: url)
+        let (sut, client) = makeSUT()
 
         _ = sut.load(from: url) { _ in }
 
@@ -127,7 +126,7 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
 
     func test_loadImageDataFromURLTwice_requestsDataFromURLTwice() {
         let url = URL(string: "https://a-given-url.com")!
-        let (sut, client) = makeSUT(url: url)
+        let (sut, client) = makeSUT()
 
         _ = sut.load(from: url) { _ in }
         _ = sut.load(from: url) { _ in }
@@ -191,11 +190,24 @@ class LoadImageCommentFromRemoteUseCaseTests: XCTestCase {
         XCTAssertTrue(received.isEmpty, "Expected no received results after cancelling task")
     }
 
+    func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+        let client = HTTPClientSpy()
+        var sut: RemoteImageCommentLoader? = RemoteImageCommentLoader(client: client)
+
+        var capturedResults = [RemoteImageCommentLoader.Outcome]()
+        _ = sut?.load(from: anyURL()) { capturedResults.append($0) }
+
+        sut = nil
+        client.complete(withStatusCode: 200, data: anyData())
+
+        XCTAssertTrue(capturedResults.isEmpty)
+    }
+
     // MARK: - helper
 
-    func makeSUT(url: URL = anyURL(), file: StaticString = #file, line: UInt = #line) -> (RemoteImageCommentLoader, HTTPClientSpy) {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (RemoteImageCommentLoader, HTTPClientSpy) {
         let client = HTTPClientSpy()
-        let sut = RemoteImageCommentLoader(url: url, client: client)
+        let sut = RemoteImageCommentLoader(client: client)
         trackForMemoryLeaks(sut, file: file, line: line)
         trackForMemoryLeaks(client, file: file, line: line)
         return (sut, client)
