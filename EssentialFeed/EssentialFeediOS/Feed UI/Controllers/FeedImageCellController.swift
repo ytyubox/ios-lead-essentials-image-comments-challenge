@@ -11,6 +11,8 @@ public protocol FeedImageCellControllerDelegate {
 }
 
 public final class FeedImageCellController: FeedImageView {
+	public typealias Image = UIImage
+	
 	private let delegate: FeedImageCellControllerDelegate
 	private var cell: FeedImageCell?
 	
