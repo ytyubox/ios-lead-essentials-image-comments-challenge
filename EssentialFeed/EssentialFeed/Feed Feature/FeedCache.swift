@@ -3,8 +3,9 @@
 //
 
 import Foundation
+import LoadingSystem
 
-public protocol FeedCache {
+public protocol FeedCache: ItemCache where Item == FeedImage {
 	typealias Result = Swift.Result<Void, Error>
 	
 	func save(_ feed: [FeedImage], completion: @escaping (Result) -> Void)

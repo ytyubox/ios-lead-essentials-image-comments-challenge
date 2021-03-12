@@ -6,13 +6,15 @@
  *
  *		Running on macOS 10.15
  */
-
 import Foundation
-public final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
+import LoadingSystem
+public final class RemoteImageCommentLoader: CancelableLoaderOwner {
+	
+	
     public typealias Output = [ImageComment]
 
-    let client: HTTPClient
-    let mapper: Mapper
+    public let client: HTTPClient
+    public let mapper: Mapper
 
     public init(client: HTTPClient) {
         self.client = client
@@ -21,21 +23,6 @@ public final class RemoteImageCommentLoader: LoadFromURLAndCancelableLoader {
             try Self.thowIfNot2XX(response: response)
             return try ImageCommentMapper.map(data, from: response).map(\.model)
         }
-    }
-
-    public func load(from url: URL, completion: @escaping Promise) -> FeedImageDataLoaderTask {
-        let task = HTTPClientTaskWrapper(completion)
-        task.wrapped = client.get(from: url) {
-            [weak self, task] result in
-            guard let self = self else { return }
-            task.complete(
-                with: result.flatMap {
-                    data, response in
-                    Result { try self.mapper(data, response) }
-                }
-            )
-        }
-        return task
     }
 
     private static func thowIfNot2XX(response: HTTPURLResponse) throws {

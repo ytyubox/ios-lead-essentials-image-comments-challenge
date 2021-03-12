@@ -6,8 +6,8 @@
  *
  *		Running on macOS 10.15
  */
-
 import Foundation
+import LoadingSystem
 enum ImageCommentMapper {
     private struct Root: Decodable {
         let items: [RemoteImageCommentItem]

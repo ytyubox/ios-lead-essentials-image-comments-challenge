@@ -6,7 +6,6 @@
  *
  *		Running on macOS 10.15
  */
-
 import Foundation
 struct RemoteImageCommentItem: Codable {
     let id: UUID

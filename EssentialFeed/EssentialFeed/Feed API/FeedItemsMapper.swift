@@ -1,8 +1,5 @@
-//
-//  Copyright © 2019 Essential Developer. All rights reserved.
-//
-
 import Foundation
+import LoadingSystem
 
 final class FeedItemsMapper {
     private struct Root: Decodable {

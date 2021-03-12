@@ -1,52 +1,13 @@
 //
-//  Copyright © 2018 Essential Developer. All rights reserved.
-//
-
+/*
+ *		Created by 游宗諭 in 2021/3/10
+ *
+ *		Using Swift 5.0
+ *
+ *		Running on macOS 11.2
+ */
 import Foundation
-public enum RemoteError: Swift.Error {
-    case connectivity
-    case invalidData
-}
-
-public class RemoteLoader<Output: ExpressibleByArrayLiteral>: FeedLoader {
-    private let url: URL
-    private let client: HTTPClient
-    private let mapper: Mapper
-    public typealias Mapper = (Data, HTTPURLResponse) throws -> Output
-    public typealias Error = RemoteError
-
-    //	public typealias Result = FeedLoader.Result
-
-    public init(url: URL, client: HTTPClient, mapper: @escaping Mapper) {
-        self.url = url
-        self.client = client
-        self.mapper = mapper
-    }
-
-    public func load(completion: @escaping (Outcome) -> Void) {
-        client.get(from: url) { [weak self] result in
-            guard let self = self else { return }
-
-            switch result {
-            case let .success((data, response)):
-                completion(self.map(data, from: response))
-
-            case .failure:
-                completion(.failure(Error.connectivity))
-            }
-        }
-    }
-
-    private func map(_ data: Data, from response: HTTPURLResponse) -> Outcome {
-        do {
-            let items = try mapper(data, response)
-            return .success(items)
-        } catch {
-            return .failure(error)
-        }
-    }
-}
-
+import LoadingSystem
 public final class RemoteFeedLoader: RemoteLoader<[FeedImage]> {
     public convenience init(url: URL, client: HTTPClient) {
         self.init(url: url, client: client) {
@@ -56,8 +17,24 @@ public final class RemoteFeedLoader: RemoteLoader<[FeedImage]> {
     }
 }
 
-private extension Array where Element == RemoteFeedItem {
-    func toModels() -> [FeedImage] {
-        return map { FeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.image) }
+extension RemoteFeedItem: RemoteModel {
+	
+    typealias Model = FeedImage
+    var model: Model {
+        FeedImage(id: id, description: description, location: location, url: image)
     }
+}
+
+extension FeedImage: AModel {
+	public typealias Local = LocalFeedImage
+	public var local: LocalFeedImage {
+		LocalFeedImage(id: id, description: description, location: location, url: url)
+	}
+}
+
+extension LocalFeedImage: LocalModel {
+	public typealias Model = FeedImage
+	public var model: Model {
+		FeedImage(id: id, description: description, location: location, url: url)
+	}
 }
