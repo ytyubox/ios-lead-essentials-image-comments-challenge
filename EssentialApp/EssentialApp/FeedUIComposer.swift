@@ -14,11 +14,11 @@ public final class FeedUIComposer {
         feedLoader: @escaping () -> Loader.Publisher,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
     ) -> FeedViewController {
-        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: feedLoader)
+        let presentationAdapter = FeedLoaderPresentationAdapter<FeedViewAdapter>(feedLoader: feedLoader)
 
         let feedController = makeFeedViewController(
             delegate: presentationAdapter,
-            title: FeedPresenter.title
+            title: FeedPresenter<FeedViewAdapter>.title
         )
 
         presentationAdapter.presenter = FeedPresenter(

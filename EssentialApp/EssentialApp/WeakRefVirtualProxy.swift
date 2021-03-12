@@ -25,7 +25,17 @@ extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
 	}
 }
 
+
+extension WeakRefVirtualProxy: UniversalView where T: FeedImageView {
+	func display(_ model: FeedImageViewModel<T.Image>) {
+		object?.display(model)
+	}
+	
+	typealias Union = FeedImageViewModel<T.Image>
+}
+
 extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == UIImage {
+	typealias Image = UIImage
 	func display(_ model: FeedImageViewModel<UIImage>) {
 		object?.display(model)
 	}

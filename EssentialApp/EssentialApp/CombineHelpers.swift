@@ -14,7 +14,7 @@ public extension FeedImageDataLoader {
 
         return Deferred {
             Future { completion in
-                task = self.loadImageData(from: url, completion: completion)
+                task = self.load(from: url, completion: completion)
             }
         }
         .handleEvents(receiveCancel: { task?.cancel() })
@@ -36,7 +36,7 @@ private extension FeedImageDataCache {
     }
 }
 
-public extension Loader {
+public extension Loader where Output == [FeedImage] {
     typealias Publisher = AnyPublisher<[FeedImage], Error>
 
     func loadPublisher() -> Publisher {
@@ -54,7 +54,7 @@ extension Publisher {
 }
 
 extension Publisher where Output == [FeedImage] {
-    func caching(to cache: FeedCache) -> AnyPublisher<Output, Failure> {
+	func caching<Cache:FeedCache>(to cache: Cache) -> AnyPublisher<Output, Failure> {
         handleEvents(receiveOutput: cache.saveIgnoringResult).eraseToAnyPublisher()
     }
 }

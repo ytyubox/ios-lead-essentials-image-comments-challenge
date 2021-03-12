@@ -6,10 +6,10 @@ import Combine
 import EssentialFeed
 import EssentialFeediOS
 
-final class FeedLoaderPresentationAdapter: FeedViewControllerDelegate {
+final class FeedLoaderPresentationAdapter<View:FeedView>: FeedViewControllerDelegate {
     private let feedLoader: () -> Loader.Publisher
     private var cancellable: Cancellable?
-    var presenter: FeedPresenter?
+	var presenter: FeedPresenter<View>?
 
     init(feedLoader: @escaping () -> Loader.Publisher) {
         self.feedLoader = feedLoader
