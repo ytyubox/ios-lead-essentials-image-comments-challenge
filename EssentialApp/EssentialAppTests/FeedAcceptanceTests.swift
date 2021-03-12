@@ -58,7 +58,8 @@ class FeedAcceptanceTests: XCTestCase {
 		httpClient: HTTPClientStub = .offline,
 		store: InMemoryFeedStore = .empty
 	) -> FeedViewController {
-		let sut = SceneDelegate(httpClient: httpClient, store: store)
+		let container = Container(httpClient: httpClient, store: InMemoryStoreAddapter(store: store))
+		let sut = SceneDelegate(root: container)
 		sut.window = UIWindow()
 		sut.configureWindow()
 		
@@ -67,7 +68,8 @@ class FeedAcceptanceTests: XCTestCase {
 	}
 	
 	private func enterBackground(with store: InMemoryFeedStore) {
-		let sut = SceneDelegate(httpClient: HTTPClientStub.offline, store: store)
+		let container = Container(httpClient: HTTPClientStub.offline, store: InMemoryStoreAddapter(store: store))
+		let sut = SceneDelegate(root: container)
 		sut.sceneWillResignActive(UIApplication.shared.connectedScenes.first!)
 	}
 	
@@ -96,5 +98,30 @@ class FeedAcceptanceTests: XCTestCase {
 			["id": UUID().uuidString, "image": "http://image.com"]
 		]])
 	}
-	
+	private class InMemoryStoreAddapter: FeedStore, FeedImageDataStore {
+		init(store: InMemoryFeedStore) {
+			self.store = store
+		}
+		
+		let store: InMemoryFeedStore
+		func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void) {
+			store.insert(data, for: url, completion: completion)
+		}
+		
+		func retrieve(dataForURL url: URL, completion: @escaping (FeedImageDataStore.RetrievalResult) -> Void) {
+			store.retrieve(dataForURL: url, completion: completion)
+		}
+		
+		func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+			store.deleteCachedFeed(completion: completion)
+		}
+		
+		func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
+			store.insert(feed, timestamp: timestamp, completion: completion)
+		}
+		
+		func retrieve(completion: @escaping RetrievalCompletion) {
+			store.retrieve(completion: completion)
+		}
+	}
 }

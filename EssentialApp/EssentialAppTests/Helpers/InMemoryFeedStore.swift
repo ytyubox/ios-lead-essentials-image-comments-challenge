@@ -6,6 +6,7 @@ import Foundation
 import EssentialFeed
 
 class InMemoryFeedStore {
+	typealias CachedFeed = LoadingSystem.CachedFeed<LocalFeedImage>
 	private(set) var feedCache: CachedFeed?
 	private var feedImageDataCache: [URL: Data] = [:]
 	
@@ -15,6 +16,8 @@ class InMemoryFeedStore {
 }
 
 extension InMemoryFeedStore: FeedStore {
+	typealias Local = LocalFeedImage
+	
 	func deleteCachedFeed(completion: @escaping FeedStore.DeletionCompletion) {
 		feedCache = nil
 		completion(.success(()))
@@ -25,7 +28,7 @@ extension InMemoryFeedStore: FeedStore {
 		completion(.success(()))
 	}
 	
-	func retrieve(completion: @escaping FeedStore.RetrievalCompletion) {
+	func retrieve(completion: @escaping RetrievalCompletion) {
 		completion(.success(feedCache))
 	}
 }
