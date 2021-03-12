@@ -3,13 +3,13 @@
 //
 
 import XCTest
-import EssentialFeed
+@testable import EssentialFeed
 
 final class FeedLocalizationTests: XCTestCase {
 	
 	func test_localizedStrings_haveKeysAndValuesForAllSupportedLocalizations() {
 		let table = "Feed"
-		let presentationBundle = Bundle(for: FeedPresenter.self)
+		let presentationBundle = Bundle.module
 		let localizationBundles = allLocalizationBundles(in: presentationBundle)
 		let localizedStringKeys = allLocalizedStringKeys(in: localizationBundles, table: table)
 		

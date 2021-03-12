@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -92,6 +92,9 @@
 		A7187D7225CC0874009D4423 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; };
 		A7187D7D25CCE164009D4423 /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0844768E21FCB24E00439BE9 /* XCTestCase+MemoryLeakTracking.swift */; };
 		A7187D8325CCE576009D4423 /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 081C0DB222491EEF00AC754E /* SharedTestHelpers.swift */; };
+		D25540B125FB862E00D149AB /* LoadingSystem in Frameworks */ = {isa = PBXBuildFile; productRef = D25540B025FB862E00D149AB /* LoadingSystem */; };
+		D25540B925FB869200D149AB /* Bundle+Module.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25540B825FB869200D149AB /* Bundle+Module.swift */; };
+		D25540C525FB86EA00D149AB /* FeedImageViewModelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25540C425FB86EA00D149AB /* FeedImageViewModelMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +213,8 @@
 		A7187D6D25CC0874009D4423 /* EssentialFeedImageCommentAPIEndToEndTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeedImageCommentAPIEndToEndTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7187D6F25CC0874009D4423 /* EssentialFeedImageCommentAPIEndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialFeedImageCommentAPIEndToEndTests.swift; sourceTree = "<group>"; };
 		A7187D7125CC0874009D4423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D25540B825FB869200D149AB /* Bundle+Module.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Module.swift"; sourceTree = "<group>"; };
+		D25540C425FB86EA00D149AB /* FeedImageViewModelMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedImageViewModelMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +222,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D25540B125FB862E00D149AB /* LoadingSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +290,7 @@
 		080EDEF321B6DA7E00813479 /* EssentialFeed */ = {
 			isa = PBXGroup;
 			children = (
+				D25540B725FB868800D149AB /* Helper */,
 				080EDEF521B6DA7E00813479 /* Info.plist */,
 				080EDF1021B6DFA200813479 /* Feed Feature */,
 				08B42EA221C3F08A00DDA349 /* Feed API */,
@@ -387,6 +394,7 @@
 				087148BA232BEC1200D6BE1A /* FeedLoadingViewModel.swift */,
 				087148BC232BEC6700D6BE1A /* FeedErrorViewModel.swift */,
 				087148C1232BFC7100D6BE1A /* FeedImagePresenter.swift */,
+				D25540C425FB86EA00D149AB /* FeedImageViewModelMapper.swift */,
 				087148C3232BFCF100D6BE1A /* FeedImageViewModel.swift */,
 				087148B1232BE90A00D6BE1A /* Feed.strings */,
 			);
@@ -558,6 +566,14 @@
 			path = EssentialFeedImageCommentAPIEndToEndTests;
 			sourceTree = "<group>";
 		};
+		D25540B725FB868800D149AB /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				D25540B825FB869200D149AB /* Bundle+Module.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -592,6 +608,9 @@
 			dependencies = (
 			);
 			name = EssentialFeed;
+			packageProductDependencies = (
+				D25540B025FB862E00D149AB /* LoadingSystem */,
+			);
 			productName = EssentialFeed;
 			productReference = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */;
 			productType = "com.apple.product-type.framework";
@@ -710,6 +729,9 @@
 				el,
 			);
 			mainGroup = 080EDEE721B6DA7E00813479;
+			packageReferences = (
+				D25540AF25FB862E00D149AB /* XCRemoteSwiftPackageReference "LoadingSystem" */,
+			);
 			productRefGroup = 080EDEF221B6DA7E00813479 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -774,6 +796,8 @@
 				08285AFB228C17B8000A8987 /* CoreDataHelpers.swift in Sources */,
 				A7187D3825CBEF8A009D4423 /* ImageCommentMapper.swift in Sources */,
 				08C0880E21E4EF2900ACFB30 /* FeedItemsMapper.swift in Sources */,
+				D25540B925FB869200D149AB /* Bundle+Module.swift in Sources */,
+				D25540C525FB86EA00D149AB /* FeedImageViewModelMapper.swift in Sources */,
 				080EDF0E21B6DCB600813479 /* Loader.swift in Sources */,
 				08868938221DAA01007BC3E7 /* RemoteFeedItem.swift in Sources */,
 				087148C4232BFCF100D6BE1A /* FeedImageViewModel.swift in Sources */,
@@ -1335,6 +1359,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D25540AF25FB862E00D149AB /* XCRemoteSwiftPackageReference "LoadingSystem" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ytyubox/LoadingSystem";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D25540B025FB862E00D149AB /* LoadingSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D25540AF25FB862E00D149AB /* XCRemoteSwiftPackageReference "LoadingSystem" */;
+			productName = LoadingSystem;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		08285AF2228BFAFF000A8987 /* FeedStore.xcdatamodeld */ = {

@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "LoadingSystem",
+        "repositoryURL": "https://github.com/ytyubox/LoadingSystem",
+        "state": {
+          "branch": null,
+          "revision": "50153eaebce364b1a0173386159597ddaf809e31",
+          "version": "1.1.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
